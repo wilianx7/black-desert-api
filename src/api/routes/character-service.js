@@ -3,20 +3,24 @@ const router = express.Router();
 const Character = require('../models/character');
 const checkAuthToken = require('../util/auth-util');
 
-router.get('/', async (req, res) => {
-    await checkAuthToken(res, req.query.userId, req.query.token);
-    
-    const limit = parseInt(req.query.limit) || 15;
-    const skip = parseInt(req.query.skip) || 0;
-    const nameFilter = req.query.name;
+router.get('/', async (req, res, next) => {
+    try {
+        await checkAuthToken(res, req.query.userId, req.query.token);
 
-    const characters = await Character.find(nameFilter ? { name: nameFilter } : {})
-        .populate('originRegion')
-        .populate('items')
-        .limit(limit)
-        .skip(skip);
+        const limit = parseInt(req.query.limit) || 15;
+        const skip = parseInt(req.query.skip) || 0;
+        const nameFilter = req.query.name;
 
-    res.json(characters);
+        const characters = await Character.find(nameFilter ? { name: nameFilter } : {})
+            .populate('originRegion')
+            .populate('items')
+            .limit(limit)
+            .skip(skip);
+
+        res.json(characters);
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get('/:id', async (req, res, next) => {

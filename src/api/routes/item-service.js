@@ -3,18 +3,22 @@ const router = express.Router();
 const Item = require('../models/item');
 const checkAuthToken = require('../util/auth-util');
 
-router.get('/', async (req, res) => {
-    await checkAuthToken(res, req.query.userId, req.query.token);
+router.get('/', async (req, res, next) => {
+    try {
+        await checkAuthToken(res, req.query.userId, req.query.token);
 
-    const limit = parseInt(req.query.limit) || 15;
-    const skip = parseInt(req.query.skip) || 0;
-    const typeFilter = req.query.type;
-
-    const items = await Item.find(typeFilter ? { type: typeFilter } : {})
-        .limit(limit)
-        .skip(skip);
-
-    res.json(items);
+        const limit = parseInt(req.query.limit) || 15;
+        const skip = parseInt(req.query.skip) || 0;
+        const typeFilter = req.query.type;
+    
+        const items = await Item.find(typeFilter ? { type: typeFilter } : {})
+            .limit(limit)
+            .skip(skip);
+    
+        res.json(items);
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get('/:id', async (req, res, next) => {

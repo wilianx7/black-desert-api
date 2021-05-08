@@ -3,18 +3,22 @@ const router = express.Router();
 const Region = require('../models/region');
 const checkAuthToken = require('../util/auth-util');
 
-router.get('/', async (req, res) => {
-    await checkAuthToken(res, req.query.userId, req.query.token);
+router.get('/', async (req, res, next) => {
+    try {
+        await checkAuthToken(res, req.query.userId, req.query.token);
 
-    const limit = parseInt(req.query.limit) || 15;
-    const skip = parseInt(req.query.skip) || 0;
-    const nameFilter = req.query.name;
-
-    const regions = await Region.find(nameFilter ? { name: nameFilter } : {})
-        .limit(limit)
-        .skip(skip);
-
-    res.json(regions);
+        const limit = parseInt(req.query.limit) || 15;
+        const skip = parseInt(req.query.skip) || 0;
+        const nameFilter = req.query.name;
+    
+        const regions = await Region.find(nameFilter ? { name: nameFilter } : {})
+            .limit(limit)
+            .skip(skip);
+    
+        res.json(regions);
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get('/:id', async (req, res, next) => {
