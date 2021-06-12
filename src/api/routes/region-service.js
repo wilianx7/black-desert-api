@@ -5,16 +5,16 @@ const checkAuthToken = require('../util/auth-util');
 
 router.get('/', async (req, res, next) => {
     try {
-        await checkAuthToken(res, req.query.userId, req.query.token);
+        await checkAuthToken(res, req.headers.authorization);
 
         const limit = parseInt(req.query.limit) || 15;
         const skip = parseInt(req.query.skip) || 0;
         const nameFilter = req.query.name;
-    
+
         const regions = await Region.find(nameFilter ? { name: nameFilter } : {})
             .limit(limit)
             .skip(skip);
-    
+
         res.json(regions);
     } catch (err) {
         next(err);
@@ -23,7 +23,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
     try {
-        await checkAuthToken(res, req.query.userId, req.query.token);
+        await checkAuthToken(res, req.headers.authorization);
 
         const id = req.params.id;
 
@@ -43,7 +43,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res) => {
     try {
-        await checkAuthToken(res, req.query.userId, req.query.token);
+        await checkAuthToken(res, req.headers.authorization);
 
         const region = new Region(req.body);
 
@@ -59,7 +59,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res, next) => {
     try {
-        await checkAuthToken(res, req.query.userId, req.query.token);
+        await checkAuthToken(res, req.headers.authorization);
 
         const id = req.params.id;
 
@@ -79,7 +79,7 @@ router.put('/:id', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
     try {
-        await checkAuthToken(res, req.query.userId, req.query.token);
+        await checkAuthToken(res, req.headers.authorization);
 
         const id = req.params.id;
 

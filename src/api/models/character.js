@@ -20,8 +20,7 @@ var characterSchema = new mongoose.Schema({
 
     originRegion: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Region',
-        required: true,
+        ref: 'Region'
     },
 
     items: [{
